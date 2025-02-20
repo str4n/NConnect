@@ -2,9 +2,31 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3A587F56-2293-43CF-A9AE-E9DB7DDCF955}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{EAD7D368-C4F0-4037-966D-3AE731424E3C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{43E8FEED-277F-48B4-A5B4-587878B2DBC1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{673C1C1B-F9F8-42FB-89E1-7816F231E097}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bootstrapper", "Bootstrapper", "{D4AD17BF-6215-40D4-9057-F906B66AE357}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NConnect.Bootstrapper", "src\Bootstrapper\NConnect.Bootstrapper\NConnect.Bootstrapper.csproj", "{B288B425-E7D4-4556-97C0-444A12E52E80}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EAD7D368-C4F0-4037-966D-3AE731424E3C} = {3A587F56-2293-43CF-A9AE-E9DB7DDCF955}
+		{43E8FEED-277F-48B4-A5B4-587878B2DBC1} = {3A587F56-2293-43CF-A9AE-E9DB7DDCF955}
+		{D4AD17BF-6215-40D4-9057-F906B66AE357} = {3A587F56-2293-43CF-A9AE-E9DB7DDCF955}
+		{B288B425-E7D4-4556-97C0-444A12E52E80} = {D4AD17BF-6215-40D4-9057-F906B66AE357}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B288B425-E7D4-4556-97C0-444A12E52E80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B288B425-E7D4-4556-97C0-444A12E52E80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B288B425-E7D4-4556-97C0-444A12E52E80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B288B425-E7D4-4556-97C0-444A12E52E80}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
