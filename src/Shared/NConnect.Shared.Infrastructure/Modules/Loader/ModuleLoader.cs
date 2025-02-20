@@ -17,7 +17,7 @@ public static class ModuleLoader
         Modules.Add(module);
     }
 
-    public static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration)
+    internal static IServiceCollection AddModules(this IServiceCollection services, IConfiguration configuration)
     {
         Modules.ForEach(module =>
         {
