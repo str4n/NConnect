@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NConnect.Shared.Infrastructure.Contexts;
+using NConnect.Shared.Infrastructure.Logging;
 
 namespace NConnect.Shared.Infrastructure;
 
@@ -11,13 +12,17 @@ public static class Extensions
 {
     private const string CorrelationIdKey = "correlation-id";
 
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)
     {
-        services.AddHttpContextAccessor();
-        services.AddContext();
-        services.AddAuthorization();
+        builder.Host.UseLogging(builder.Configuration);
         
-        return services;
+        builder.Services
+            .AddLogging(builder.Configuration)
+            .AddHttpContextAccessor()
+            .AddContext()
+            .AddAuthorization();
+        
+        return builder;
     }
 
     public static WebApplication UseInfrastructure(this WebApplication app)
@@ -26,13 +31,24 @@ public static class Extensions
         {
             ForwardedHeaders = ForwardedHeaders.All
         });
-        
-        app.UseContext();
+
         app.UseCorrelationId();
+        app.UseContext();
         app.UseRouting();
         app.UseAuthorization();
 
         return app;
+    }
+    
+    public static TOptions BindOptions<TOptions>(this IConfiguration configuration, string sectionName) where TOptions : class, new()
+        => BindOptions<TOptions>(configuration.GetSection(sectionName));
+    
+    public static TOptions BindOptions<TOptions>(this IConfigurationSection section) where TOptions : class, new()
+    {
+        var options = new TOptions();
+        section.Bind(options);
+
+        return options;
     }
     
     internal static Guid? TryGetCorrelationId(this HttpContext context)

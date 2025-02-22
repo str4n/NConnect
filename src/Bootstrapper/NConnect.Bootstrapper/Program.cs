@@ -4,9 +4,9 @@ using NConnect.Shared.Infrastructure.Modules.Loader;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services
-    .AddInfrastructure(builder.Configuration)
-    .AddModules(builder.Configuration);
+builder.AddInfrastructure();
+    
+builder.Services.AddModules(builder.Configuration);
 
 var app = builder.Build();
 
