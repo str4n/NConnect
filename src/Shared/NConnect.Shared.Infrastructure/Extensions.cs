@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NConnect.Shared.Infrastructure.Contexts;
+using NConnect.Shared.Infrastructure.CQRS;
 using NConnect.Shared.Infrastructure.Logging;
 
 namespace NConnect.Shared.Infrastructure;
@@ -20,7 +21,10 @@ public static class Extensions
             .AddLogging(builder.Configuration)
             .AddHttpContextAccessor()
             .AddContext()
-            .AddAuthorization();
+            .AddAuthorization()
+            .AddCommands()
+            .AddQueries()
+            .AddDispatcher();
         
         return builder;
     }
