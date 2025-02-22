@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NConnect.Shared.Abstractions.CQRS.Commands;
+using NConnect.Shared.Abstractions.CQRS.Queries;
+using NConnect.Shared.Infrastructure.Logging.Decorators;
 using Serilog;
 using Serilog.Events;
 
@@ -14,6 +17,8 @@ internal static class Extensions
     public static IServiceCollection AddLogging(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<SerilogOptions>(configuration.GetSection(SerilogSectionName));
+        services.TryDecorate(typeof(ICommandHandler<>), typeof(LoggingCommandHandlerDecorator<>));
+        services.TryDecorate(typeof(IQueryHandler<,>), typeof(LoggingQueryHandlerDecorator<,>));
 
         return services;
     }

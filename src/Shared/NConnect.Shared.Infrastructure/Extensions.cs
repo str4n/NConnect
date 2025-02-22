@@ -55,6 +55,9 @@ public static class Extensions
         return options;
     }
     
+    public static string? GetModuleName(this object obj)
+        => obj.GetType().FullName?.Split('.')[2];
+    
     internal static Guid? TryGetCorrelationId(this HttpContext context)
         => context.Items.TryGetValue(CorrelationIdKey, out var id) ? (Guid) id! : null;
     
