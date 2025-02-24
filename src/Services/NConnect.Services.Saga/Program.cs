@@ -1,9 +1,11 @@
+using NConnect.Shared.Base;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults();
+builder.AddBaseFeatures();
 
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
+app.UseBaseFeatures();
 
 app.Run();

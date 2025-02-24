@@ -11,7 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Aspire\NConnect.Aspire.ServiceDefaults\NConnect.Aspire.ServiceDefaults.csproj" />
+      <ProjectReference Include="..\..\Shared\NConnect.Shared.Base\NConnect.Shared.Base.csproj" />
     </ItemGroup>
 
 </Project>

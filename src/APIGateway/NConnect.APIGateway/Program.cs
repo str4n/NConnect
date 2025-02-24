@@ -1,6 +1,8 @@
+using NConnect.Shared.Base;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults();
+builder.AddBaseFeatures();
 
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
@@ -8,9 +10,8 @@ builder.Services.AddReverseProxy()
 
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
+app.UseBaseFeatures();
 
 app.MapReverseProxy();
-
 
 app.Run();
