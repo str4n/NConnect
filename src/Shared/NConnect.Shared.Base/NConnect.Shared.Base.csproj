@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Aspire\NConnect.Aspire.ServiceDefaults\NConnect.Aspire.ServiceDefaults.csproj" />
       <ProjectReference Include="..\NConnect.Shared.Api\NConnect.Shared.Api.csproj" />
+      <ProjectReference Include="..\NConnect.Shared.Observability\NConnect.Shared.Observability.csproj" />
     </ItemGroup>
 
 </Project>
