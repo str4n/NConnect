@@ -17,7 +17,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\APIGateway\NConnect.APIGateway\NConnect.APIGateway.csproj" />
-      <ProjectReference Include="..\..\Services\NConnect.Services.Saga\NConnect.Services.Saga.csproj" />
+      <ProjectReference Include="..\..\Services\Chats\NConnect.Services.Chats.Api\NConnect.Services.Chats.Api.csproj" />
+      <ProjectReference Include="..\..\Services\Saga\NConnect.Services.Saga\NConnect.Services.Saga.csproj" />
     </ItemGroup>
 
 </Project>

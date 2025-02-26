@@ -7,17 +7,25 @@ internal static class Extensions
 {
     public static IDistributedApplicationBuilder AddServices(this IDistributedApplicationBuilder builder)
     {
-        var saga = builder
-            .AddProject<NConnect_Services_Saga>(GetServiceName<NConnect_Services_Saga>())
-            .WithScalarUi();
+        var saga = builder.CreateProject<NConnect_Services_Saga>();
+
+        var chats = builder.CreateProject<NConnect_Services_Chats_Api>();
         
         builder
-            .AddProject<NConnect_APIGateway>(GetServiceName<NConnect_APIGateway>())
-            .WithScalarUi()
-            .WithReference(saga);
+            .CreateProject<NConnect_APIGateway>(1)
+            .WithReference(saga)
+            .WithReference(chats);
         
         return builder;
     }
-    
-    private static string GetServiceName<T>() => typeof(T).Name.Split('_').Last();
+
+    private static IResourceBuilder<ProjectResource> CreateProject<TProject>(
+        this IDistributedApplicationBuilder builder, int index = 2)
+        where TProject : IProjectMetadata, new()
+        => builder
+            .AddProject<TProject>(ExtractServiceName<TProject>(index))
+            .WithScalarUi();
+
+    private static string ExtractServiceName<T>(int index = 2)
+        => typeof(T).Name.Split('_')[index];
 }
