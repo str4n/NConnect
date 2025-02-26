@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Shared\NConnect.Shared.Base\NConnect.Shared.Base.csproj" />
+      <ProjectReference Include="..\NConnect.Services.Chats.Core\NConnect.Services.Chats.Core.csproj" />
     </ItemGroup>
 
 </Project>
