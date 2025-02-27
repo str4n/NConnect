@@ -10,4 +10,8 @@
       <ProjectReference Include="..\..\..\Shared\NConnect.Shared.Base\NConnect.Shared.Base.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="NConnect.Services.Chats.Tests.Unit"/>
+    </ItemGroup>
+
 </Project>

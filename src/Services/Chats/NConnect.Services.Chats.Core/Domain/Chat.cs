@@ -1,75 +1,162 @@
-﻿using NConnect.Services.Chats.Core.Domain.Events;
+﻿using NConnect.Services.Chats.Core.Domain.Aggregate;
+using NConnect.Services.Chats.Core.Domain.Events;
+using NConnect.Services.Chats.Core.Domain.Exceptions;
 
 namespace NConnect.Services.Chats.Core.Domain;
 
-public sealed class Chat 
+public sealed class Chat : Aggregate<ChatId>
 {
-    public ChatId Id { get; private set; } = ChatId.Create();
-    
     private readonly List<Message> _messages = new();
-    public IEnumerable<Message> Messages => _messages;
+    public IReadOnlyCollection<Message> Messages => _messages;
     
     private HashSet<Guid> _participants = new();
-    public IEnumerable<Guid> Participants => _participants;
-    public readonly List<Event> Events = new();
+    public IReadOnlyCollection<Guid> Participants => _participants;
+    public DateTime CreatedAt { get; private set; }
     
     public static Chat Create(IEnumerable<Guid> participants, DateTime timestamp)
     {
-        var listOfParticipants = participants.ToList();
+        participants = participants.ToList();
         
-        if (!listOfParticipants.Any())
+        if (!participants.Any())
         {
-            //
+            throw new InvalidChatParticipantsCountException("Chat must contain at least one participant.");
         }
         
         var id = ChatId.Create();
 
         var chat = new Chat();
         
-        var @event = new ChatCreated(id, listOfParticipants, timestamp);
-        chat.Apply(@event);
+        var @event = new ChatCreated(id, participants, timestamp);
+        chat.ApplyEvent(@event);
         
         return chat;
     }
 
-    private void Apply(Event @event)
+    public void SendMessage(Guid messageId, Guid senderId, string content, DateTime timestamp)
     {
-        switch (@event)
+        if (!_participants.Contains(senderId))
         {
-            case ChatCreated e:
-                Id = e.ChatId;
-                _participants = e.Participants.ToHashSet();
-                break;
-            
-            case MessageSent e:
-                _messages.Add(new Message(e.ChatId, e.Content, e.Timestamp));
-                break;
-            
-            case MessageEdited e:
-                _messages
-                    .Single(x => x.Id == e.MessageId)
-                    .Edit(e.NewContent, e.Timestamp);
-                break;
-            
-            case MessageDeleted e:
-                _messages
-                    .Single(x => x.Id == e.MessageId)
-                    .Delete(e.Timestamp);
-                break;
+            throw new InvalidParticipantException("The message sender is not part of this chat.");
         }
         
-        Events.Add(@event);
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            throw new InvalidMessageContentException("Message cannot be empty.");
+        }
+        
+        var @event = new MessageSent(Id!, messageId, senderId, content, timestamp);
+        ApplyEvent(@event);
     }
 
-    private static Chat ReplayEvents(IEnumerable<Event> events)
+    public void EditMessage(Guid messageId, Guid participantId, string oldContent, string newContent, DateTime timestamp)
+    {
+        if (!_participants.Contains(participantId))
+        {
+            throw new InvalidParticipantException("The message editor is not part of this chat.");
+        }
+        
+        var message = _messages.FirstOrDefault(x => x.Id == messageId);
+        
+        if (message is null)
+        {
+            throw new MessageNotFoundException(messageId);
+        }
+        
+        if (message.SenderId != participantId)
+        {
+            throw new InvalidParticipantException("Cannot delete the message.");
+        }
+        
+        if (string.IsNullOrWhiteSpace(newContent))
+        {
+            throw new InvalidMessageContentException("Message cannot be empty.");
+        }
+
+        if (oldContent == newContent)
+        {
+            throw new CannotEditMessageException("New message content cannot be the same.");
+        }
+        
+        var @event = new MessageEdited(Id!, messageId, participantId, oldContent, newContent, timestamp);
+        ApplyEvent(@event);
+    }
+
+    public void DeleteMessage(Guid messageId, Guid participantId, DateTime timestamp)
+    {
+        if (!_participants.Contains(participantId))
+        {
+            throw new InvalidParticipantException("The message deleter is not part of this chat.");
+        }
+        
+        var message = _messages.FirstOrDefault(x => x.Id == messageId);
+        
+        if (message is null)
+        {
+            throw new MessageNotFoundException(messageId);
+        }
+
+        if (message.SenderId != participantId)
+        {
+            throw new InvalidParticipantException("Cannot delete the message.");
+        }
+        
+        var @event = new MessageDeleted(Id!, messageId, participantId, timestamp);
+        ApplyEvent(@event);
+    }
+
+    public Chat ReplyEvents(IEnumerable<Event> events)
     {
         var chat = new Chat();
         
         foreach (var @event in events)
         {
-            chat.Apply(@event);
+            chat.ApplyEvent(@event);
         }
         
         return chat;
     }
+
+    protected override void ApplyEvent(Event @event)
+    {
+        switch (@event)
+        {
+            case ChatCreated e:
+                Apply(e);
+                break;
+            
+            case MessageSent e:
+                Apply(e);
+                break;
+            
+            case MessageEdited e:
+                Apply(e);
+                break;
+            
+            case MessageDeleted e:
+                Apply(e);
+                break;
+        }
+        
+        _events.Add(@event);
+    }
+
+    private void Apply(ChatCreated e)
+    {
+        Id = e.ChatId;
+        _participants = e.Participants.ToHashSet();
+        CreatedAt = e.Timestamp;
+    }
+    
+    private void Apply(MessageSent e) 
+        => _messages.Add(new Message(e.MessageId, e.SenderId, e.Content, e.Timestamp));
+    
+    private void Apply(MessageEdited e) 
+        => _messages
+            .Single(x => x.Id == e.MessageId)
+            .Edit(e.NewContent, e.Timestamp);
+    
+    private void Apply(MessageDeleted e) 
+        => _messages
+            .Single(x => x.Id == e.MessageId)
+            .Delete(e.Timestamp);
 }
