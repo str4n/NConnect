@@ -3,6 +3,7 @@
 public sealed class Message
 {
     public Guid Id { get; private set; }
+    public Guid SenderId { get; private set; }
     public string Content { get; private set; }
     public DateTime SentAt { get; private set; }
     public bool IsEdited { get; private set; }
@@ -10,9 +11,10 @@ public sealed class Message
     public bool IsDeleted { get; private set; }
     public DateTime? DeletedAt { get; private set; }
 
-    public Message(Guid id, string content, DateTime sentAt, bool isEdited = false, DateTime? editedAt = null, bool isDeleted = false, DateTime? deletedAt = null)
+    public Message(Guid id, Guid senderId, string content, DateTime sentAt, bool isEdited = false, DateTime? editedAt = null, bool isDeleted = false, DateTime? deletedAt = null)
     {
         Id = id;
+        SenderId = senderId;
         Content = content;
         SentAt = sentAt;
         IsEdited = isEdited;
